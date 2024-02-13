@@ -26,9 +26,11 @@ class _ClockViewState extends State<ClockView> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
     return SizedBox(
-      width: 300,
-      height: 300,
+      width: size.width,
+      height: size.height * 0.29,
       child: Transform.rotate(
         angle: -pi / 2,
         child: CustomPaint(

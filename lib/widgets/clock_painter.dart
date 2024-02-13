@@ -23,9 +23,9 @@ class ClockPainter extends CustomPainter {
     Paint circleOuterPaint = Paint()
       ..color = const Color(0xFFEAECff)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 16;
-    canvas.drawCircle(center, radius - 40, circleInnerPaint);
-    canvas.drawCircle(center, radius - 40, circleOuterPaint);
+      ..strokeWidth = size.width / 20;
+    canvas.drawCircle(center, radius * 0.75, circleInnerPaint);
+    canvas.drawCircle(center, radius * 0.75, circleOuterPaint);
 
     // Drawing hour handler
     Paint hourPaint = Paint()
@@ -39,11 +39,15 @@ class ClockPainter extends CustomPainter {
         ),
       )
       ..style = PaintingStyle.fill
-      ..strokeWidth = 11;
+      ..strokeWidth = size.width / 24;
     double hourXOffset = centerX +
-        40 * cos((dateTime.hour * 30 + dateTime.minute * 0.5) * pi / 180);
+        radius *
+            0.32 *
+            cos((dateTime.hour * 30 + dateTime.minute * 0.5) * pi / 180);
     double hourYOffset = centerY +
-        40 * sin((dateTime.hour * 30 + dateTime.minute * 0.5) * pi / 180);
+        radius *
+            0.32 *
+            sin((dateTime.hour * 30 + dateTime.minute * 0.5) * pi / 180);
     canvas.drawLine(center, Offset(hourXOffset, hourYOffset), hourPaint);
 
     // Drawing minute handler
@@ -58,9 +62,11 @@ class ClockPainter extends CustomPainter {
         ),
       )
       ..style = PaintingStyle.fill
-      ..strokeWidth = 7;
-    double minXOffset = centerX + 60 * cos(dateTime.minute * 6 * pi / 180);
-    double minYOffset = centerY + 60 * sin(dateTime.minute * 6 * pi / 180);
+      ..strokeWidth = size.width / 34;
+    double minXOffset =
+        centerX + radius * 0.45 * cos(dateTime.minute * 6 * pi / 180);
+    double minYOffset =
+        centerY + radius * 0.45 * sin(dateTime.minute * 6 * pi / 180);
     canvas.drawLine(center, Offset(minXOffset, minYOffset), minutePaint);
 
     // Drawing second handler
@@ -68,9 +74,11 @@ class ClockPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..color = Colors.orange[300]!
       ..style = PaintingStyle.fill
-      ..strokeWidth = 4;
-    double secXOffset = centerX + 80 * cos(dateTime.second * 6 * pi / 180);
-    double secYOffset = centerY + 80 * sin(dateTime.second * 6 * pi / 180);
+      ..strokeWidth = size.width / 60;
+    double secXOffset =
+        centerX + radius * 0.60 * cos(dateTime.second * 6 * pi / 180);
+    double secYOffset =
+        centerY + radius * 0.60 * sin(dateTime.second * 6 * pi / 180);
     canvas.drawLine(center, Offset(secXOffset, secYOffset), secondPaint);
 
     // Drawing innter->innter dot circle
@@ -82,7 +90,7 @@ class ClockPainter extends CustomPainter {
       ..color = Colors.grey
       ..strokeWidth = 2;
     double outerLine = radius;
-    double innterLine = radius - 14;
+    double innterLine = radius * 0.9;
     for (int i = 0; i < 360; i += 12) {
       double x1 = centerX + outerLine * cos(i * pi / 180);
       double y1 = centerX + outerLine * sin(i * pi / 180);
