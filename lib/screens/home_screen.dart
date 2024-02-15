@@ -1,6 +1,10 @@
+import 'package:clock_app/core/data/menu.dart';
+import 'package:clock_app/core/enum/enums.dart';
+import 'package:clock_app/models/menu_info.dart';
 import 'package:flutter/material.dart';
 import 'package:clock_app/widgets/clock_view.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -24,28 +28,9 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                MenuItemButton(
-                  onPressed: () {},
-                  image: 'assets/images/clock_icon.png',
-                  text: 'Clock',
-                ),
-                MenuItemButton(
-                  onPressed: () {},
-                  image: 'assets/images/alarm_icon.png',
-                  text: 'Alarm',
-                ),
-                MenuItemButton(
-                  onPressed: () {},
-                  image: 'assets/images/timer_icon.png',
-                  text: 'Timer',
-                ),
-                MenuItemButton(
-                  onPressed: () {},
-                  image: 'assets/images/stopwatch_icon.png',
-                  text: 'StopWatch',
-                ),
-              ],
+              children: menuItems.map((currentMenuInfo) {
+                return MenuItemButton(currentMenuInfo: currentMenuInfo);
+              }).toList(),
             ),
           ),
           const VerticalDivider(
@@ -53,64 +38,101 @@ class HomePage extends StatelessWidget {
             width: 0.8,
           ),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(32),
-              alignment: Alignment.center,
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      "Clock",
+            child: Consumer<MenuInfo>(
+              builder: (BuildContext context, MenuInfo value, Widget? child) {
+                if (value.menuType == MenuType.alarm) {
+                  return const Center(
+                    child: Text(
+                      'Alarm',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    Text(
-                      formattedTime,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 64,
-                      ),
+                  );
+                } else if (value.menuType == MenuType.timer) {
+                  return const Center(
+                      child: Text(
+                    'Timer',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      formattedDate,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
+                  ));
+                } else if (value.menuType == MenuType.stopwatch) {
+                  return const Center(
+                      child: Text(
+                    'StopWatch',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 40),
-                    const ClockView(),
-                    const SizedBox(height: 40),
-                    const Text(
-                      "Timezone",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                      ),
-                    ),
-                    Row(
+                  ));
+                }
+
+                return Container(
+                  padding: const EdgeInsets.all(32),
+                  alignment: Alignment.center,
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const Icon(
-                          Icons.language,
-                          color: Colors.white,
+                        const Text(
+                          "Clock",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                          ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(height: 32),
                         Text(
-                          "UTC$offsetSign$timezoneString",
+                          formattedTime,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
+                            fontSize: 64,
                           ),
+                        ),
+                        Text(
+                          formattedDate,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        const ClockView(),
+                        const SizedBox(height: 40),
+                        const Text(
+                          "Timezone",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                          ),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            const Icon(
+                              Icons.language,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              "UTC$offsetSign$timezoneString",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -120,42 +142,47 @@ class HomePage extends StatelessWidget {
 }
 
 class MenuItemButton extends StatelessWidget {
-  final String text;
-  final String image;
-  final VoidCallback onPressed;
+  final MenuInfo currentMenuInfo;
 
   const MenuItemButton({
     super.key,
-    required this.image,
-    required this.text,
-    required this.onPressed,
+    required this.currentMenuInfo,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        width: double.maxFinite,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 59, 60, 71),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: <Widget>[
-            Image.asset(
-              image,
-              scale: 1.5,
+    return Consumer<MenuInfo>(
+      builder: (BuildContext context, MenuInfo value, Widget? child) {
+        return GestureDetector(
+          onTap: () {
+            var menuInfo = Provider.of<MenuInfo>(context, listen: false);
+            menuInfo.updateMenu(currentMenuInfo);
+          },
+          child: Container(
+            width: double.maxFinite,
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: currentMenuInfo.menuType == value.menuType
+                  ? const Color.fromARGB(255, 59, 60, 71)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
             ),
-            Text(
-              text,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+            child: Column(
+              children: <Widget>[
+                Image.asset(
+                  currentMenuInfo.imageSource,
+                  scale: 1.5,
+                ),
+                Text(
+                  currentMenuInfo.title,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
